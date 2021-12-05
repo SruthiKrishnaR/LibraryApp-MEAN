@@ -3,10 +3,12 @@ const BookData = require('./src/model/Bookdata');
 const AuthorData = require('./src/model/Authordata');
 const Signupdata = require('./src/model/Signupdata');
 const Admindata = require('./src/model/Admindata');
+const bcrypt = require('bcrypt');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 var bodyparser = require('body-parser');
 const path = require('path');
+
 var app = new express();
 
 const port = process.env.PORT || 3000;
@@ -16,28 +18,30 @@ app.use(bodyparser.json());
 app.use(express.static('./dist/LibraryApp'));
 
 
-
-app.get('/api/books',function(req,res){
+app.get('/api/books',(req,res)=>{
+    console.log('api call');
     res.header("Access-Control-Allow-Origin","*");
     res.header('Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE, OPTIONS');
     BookData.find()
-        .then(function(books){
-            // console.log(books);
+        .then((books)=>{
+            console.log(books);
             res.send(books);
         });
 });
 
 app.get('/api/books/:id',(req,res)=>{
+    res.header("Access-Control-Allow-Origin","*");
+    res.header('Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE, OPTIONS');
     const id = req.params.id;
     // console.log(id);
     BookData.findOne({"_id":id})
     .then((book)=>{
-        // console.log(book);
+        console.log(book);
         res.send(book);
     });
 });
 
-app.get('/api/authors',function(req,res){
+app.get('/api/authors',(req,res)=>{
     res.header("Access-Control-Allow-Origin","*");
     res.header('Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE, OPTIONS');
     AuthorData.find()
@@ -48,6 +52,8 @@ app.get('/api/authors',function(req,res){
 });
 
 app.get('/api/authors/:id',(req,res)=>{
+    res.header("Access-Control-Allow-Origin","*");
+    res.header('Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE, OPTIONS');
     const id = req.params.id;
     // console.log(id);
     AuthorData.findOne({"_id":id})
@@ -57,7 +63,29 @@ app.get('/api/authors/:id',(req,res)=>{
     });
 });
 
-app.post('/api/addbook',verifyToken,function(req,res){
+
+function verifyToken(req,res,next){
+    if(!req.headers.authorization)
+    {
+        return res.status(401).send('Unauthorized request');
+    }
+    let token = req.headers.authorization.split(' ')[1]
+    if(token === 'null')
+    {
+        return res.status(401).send('Unauthorized request');
+    }
+    let payload = jwt.verify(token,'secretKey');
+    console.log(payload);
+    if(!payload)
+    {
+        return res.status(401).send('Unauthorized request');
+    }
+    req.userId = payload.subject;
+    next();
+}
+
+
+app.post('/api/addbook',verifyToken,(req,res)=>{
     res.header("Access-Control-Allow-Origin","*");
     res.header('Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE, OPTIONS');
     console.log(req.body);
@@ -73,6 +101,8 @@ app.post('/api/addbook',verifyToken,function(req,res){
 });
 
 app.put('/api/updatebook',verifyToken,(req,res)=>{
+    res.header("Access-Control-Allow-Origin","*");
+    res.header('Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE, OPTIONS');
     console.log(req.body);
     id = req.body._id;
     title = req.body.title;
@@ -92,7 +122,7 @@ app.put('/api/updatebook',verifyToken,(req,res)=>{
 });
 
 
-app.post('/api/addauthor',verifyToken,function(req,res){
+app.post('/api/addauthor',verifyToken,(req,res)=>{
     res.header("Access-Control-Allow-Origin","*");
     res.header('Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE, OPTIONS');
     console.log(req.body);
@@ -109,6 +139,8 @@ app.post('/api/addauthor',verifyToken,function(req,res){
 });
 
 app.put('/api/updateauthor',verifyToken,(req,res)=>{
+    res.header("Access-Control-Allow-Origin","*");
+    res.header('Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE, OPTIONS');
     console.log(req.body);
     id = req.body._id;
     name = req.body.name;
@@ -131,6 +163,8 @@ app.put('/api/updateauthor',verifyToken,(req,res)=>{
 
 
 app.delete('/api/removebook/:id',verifyToken,(req,res)=>{
+    res.header("Access-Control-Allow-Origin","*");
+    res.header('Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE, OPTIONS');
     id = req.params.id;
     BookData.findByIdAndDelete({"_id":id})
     .then(()=>{
@@ -140,6 +174,8 @@ app.delete('/api/removebook/:id',verifyToken,(req,res)=>{
 });
 
 app.delete('/api/removeauthor/:id',verifyToken,(req,res)=>{
+    res.header("Access-Control-Allow-Origin","*");
+    res.header('Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE, OPTIONS');
     id = req.params.id;
     AuthorData.findByIdAndDelete({"_id":id})
     .then(()=>{
@@ -149,6 +185,8 @@ app.delete('/api/removeauthor/:id',verifyToken,(req,res)=>{
 });
 
 app.post('/api/signup',(req,res)=>{
+    res.header("Access-Control-Allow-Origin","*");
+    res.header('Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE, OPTIONS');
     console.log(req.body);
     var details = {
         username : req.body.username,
@@ -167,59 +205,63 @@ app.post('/api/signup',(req,res)=>{
 username="admin";
 password="1234";
 
-function verifyToken(req,res,next){
-    if(!req.headers.authorization)
-    {
-        return res.status(401).send('Unauthorized request');
-    }
-    let token = req.headers.authorization.split(' ')[1]
-    if(token === 'null')
-    {
-        return res.status(401).send('Unauthorized request');
-    }
-    let payload = jwt.verify(token,'secretKey');
-    console.log(payload);
-    if(!payload)
-    {
-        return res.status(401).send('Unauthorized request');
-    }
-    req.userId = payload.subject;
-    next();
-}
 
-app.post('/api/login',(req,res)=>{
 
-    details = req.body;
-    console.log(details);
-        Signupdata.findOne({'username':details.username},(err,user)=>{
-                 if(password == user.pass){
-                        console.log('User Entered');
-                        res.send();
-                    
-                }else if(!user){
-            Admindata.find({'username':details.username},(err,admin)=>{
-                    if(admin){
-                        if(password === '12345'){
-                            console.log('Admin entered');
-                            res.send();
-                        }else{
-                            console.log('Wrong pwd');
-                            res.send();
-                        }
-                    }else{
-                        console.log('Not an Admin!!!');
+
+app.post('/api/login',function (req, res) {
+    // let userData = req.body;
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE, OPTIONS");
+
+    var username = req.body.username;
+    var password = req.body.password;
+
+    console.log(req.body);
+    Signupdata.findOne({'username': username},(err,user)=>{
+        console.log('inside signup data');
+         if(user){
+            console.log(user);
+            bcrypt.compare(password,user.pass)
+            .then((status)=>{
+                if(status){
+                    console.log(status);
+                    console.log(username,password);
+                    console.log("success");
+                    let payload = {subject: username + password};
+                    let token = jwt.sign(payload,'userKey');
+                    res.status(200).send({token,role:'user'});
+                    console.log("logged in");
+                
+                    }
+                    else{
+                        console.log("Incorrect Credentials");
+                    }
+            });
+        }
+        else if(!user){
+            if(username == 'admin'){
+                Admindata.findOne({ 'username': username, 'password': password}, function (err, admin) {
+                    console.log(admin);
+                    console.log("inside admin");
+                    if (admin) {
+                        console.log(admin);
+                        let payload = {subject: username + password};
+                        let token = jwt.sign(payload,'adminKey');
+                        res.status(200).send({token,role:'admin'});
+                        console.log("admin success");
+                    } else {
+                        console.log('Only Admin can Log in!');
                     }
                 });
             }
-        });
-
-});
+            
+        } 
+    });
+ });
 
 app.get('/*',function(req,res){
-    res.sendFile(path.join(_dirname + '/dist/LibraryApp/index.html'));
+    res.sendFile(path.join(__dirname + '/dist/LibraryApp/index.html'));
 })
 
 
-app.listen(port, function(){
-    console.log('listening to port http://localhost:3000');
-});
+app.listen(port,()=>{console.log("server Ready at"+port)});
