@@ -202,10 +202,8 @@ app.post('/api/signup',(req,res)=>{
     res.status(200).send({token});
 })
 
-username="admin";
-password="1234";
-
-
+// username="admin";
+// password="1234";
 
 
 app.post('/api/login',function (req, res) {
@@ -241,7 +239,6 @@ app.post('/api/login',function (req, res) {
         else if(!user){
             if(username == 'admin'){
                 Admindata.findOne({ 'username': username, 'password': password}, function (err, admin) {
-                    console.log(admin);
                     console.log("inside admin");
                     if (admin) {
                         console.log(admin);
@@ -250,7 +247,7 @@ app.post('/api/login',function (req, res) {
                         res.status(200).send({token,role:'admin'});
                         console.log("admin success");
                     } else {
-                        console.log('Only Admin can Log in!');
+                        console.log('Only Admin can Log in!!!!');
                     }
                 });
             }
