@@ -115,7 +115,7 @@ app.put('/api/updatebook',verifyToken,(req,res)=>{
                                     "genre":genre,
                                     "image":image
                                     }})
-                .then(function(data){
+                .then((data)=>{
                     console.log(data);
                     res.send();
                 });
