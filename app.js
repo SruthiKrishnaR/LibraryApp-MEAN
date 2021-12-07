@@ -85,7 +85,7 @@ function verifyToken(req,res,next){
 }
 
 
-app.post('/api/addbook',verifyToken,(req,res)=>{
+app.post('/api/addbook',(req,res)=>{
     res.header("Access-Control-Allow-Origin","*");
     res.header('Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE, OPTIONS');
     console.log(req.body);
@@ -100,7 +100,7 @@ app.post('/api/addbook',verifyToken,(req,res)=>{
     book.save();
 });
 
-app.put('/api/updatebook',verifyToken,(req,res)=>{
+app.put('/api/updatebook',(req,res)=>{
     res.header("Access-Control-Allow-Origin","*");
     res.header('Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE, OPTIONS');
     console.log(req.body);
@@ -122,7 +122,7 @@ app.put('/api/updatebook',verifyToken,(req,res)=>{
 });
 
 
-app.post('/api/addauthor',verifyToken,(req,res)=>{
+app.post('/api/addauthor',(req,res)=>{
     res.header("Access-Control-Allow-Origin","*");
     res.header('Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE, OPTIONS');
     console.log(req.body);
@@ -138,7 +138,7 @@ app.post('/api/addauthor',verifyToken,(req,res)=>{
     author.save();
 });
 
-app.put('/api/updateauthor',verifyToken,(req,res)=>{
+app.put('/api/updateauthor',(req,res)=>{
     res.header("Access-Control-Allow-Origin","*");
     res.header('Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE, OPTIONS');
     console.log(req.body);
@@ -162,7 +162,7 @@ app.put('/api/updateauthor',verifyToken,(req,res)=>{
 });
 
 
-app.delete('/api/removebook/:id',verifyToken,(req,res)=>{
+app.delete('/api/removebook/:id',(req,res)=>{
     res.header("Access-Control-Allow-Origin","*");
     res.header('Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE, OPTIONS');
     id = req.params.id;
@@ -173,7 +173,7 @@ app.delete('/api/removebook/:id',verifyToken,(req,res)=>{
     });
 });
 
-app.delete('/api/removeauthor/:id',verifyToken,(req,res)=>{
+app.delete('/api/removeauthor/:id',(req,res)=>{
     res.header("Access-Control-Allow-Origin","*");
     res.header('Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE, OPTIONS');
     id = req.params.id;
